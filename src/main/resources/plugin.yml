@@ -1,7 +1,7 @@
 name: Astra
 version: '${project.version}'
 main: ru.astra.AstraPlugin
-api-version: '1.21'
+api-version: '1.21.11'
 description: Astra - инструментарий постановщика: способности, иллюзии и пользовательские сцены.
 author: Astra Team
 load: POSTWORLD

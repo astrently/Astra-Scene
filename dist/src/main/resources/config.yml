@@ -1,0 +1,164 @@
+# Astra - конфигурация плагина.
+# Все числовые значения являются значениями по умолчанию и могут быть изменены.
+# При ошибочном значении плагин использует безопасное значение по умолчанию.
+
+settings:
+  debug: false
+  max-active-scenes: 20
+  max-scene-duration-seconds: 300
+  max-viewers-per-scene: 50
+  # Останавливать все активные сцены при выключении плагина.
+  stop-scenes-on-plugin-disable: true
+  # Что делать со сценами, если носитель Astra вышел из игры: keep | stop
+  on-bearer-quit: keep
+  # Поведение сцены при смене мира носителем: continue | stop
+  on-bearer-world-change: continue
+  # Максимальный размер партии частиц на один вызов (защита от перегрузки).
+  max-particles-per-burst: 200
+  # Максимальное количество активных задач-маршрутов "Кукловода".
+  max-puppet-routes: 16
+
+permissions:
+  default-role-permission: "astra.use"
+
+abilities:
+  masquerade:
+    enabled: true
+    max-viewers: 10
+    search-radius: 64
+    sound-radius: 8
+    min-delay-seconds: 1
+    max-delay-seconds: 3
+    min-duration-seconds: 3
+    max-duration-seconds: 8
+    episodes: 2
+    # Полноценная фальшивая сущность требует пакетной реализации;
+    # при false используется визуальный режим из частиц (упрощённый).
+    fake-entity-enabled: false
+
+  mirror:
+    enabled: true
+    max-projections: 3
+    search-radius: 64
+    min-offset: 2
+    max-offset: 5
+    duration-seconds: 10
+    # Точная копия внешности игрока требует пакетной реализации.
+    # При false проекции отображаются как упрощённый визуальный эффект.
+    entity-mode-enabled: false
+
+  spotlight:
+    enabled: true
+    search-radius: 64
+    visual-radius: 3
+    duration-seconds: 5
+    updates-per-second: 5
+    particle: DUST
+    dust-color: "#FFFFFF"
+    sound: BLOCK_NOTE_BLOCK_PLING
+
+  puppeteer:
+    enabled: true
+    search-radius: 64
+    max-route-points: 20
+    min-speed-blocks-per-tick: 0.2
+    max-speed-blocks-per-tick: 1.0
+    point-pause-ticks-min: 0
+    point-pause-ticks-max: 100
+    max-duration-seconds: 60
+    stuck-timeout-seconds: 10
+    # Принудительное управление игроком: отдельный явно включаемый режим.
+    player-control-enabled: false
+
+  threads:
+    enabled: true
+    min-targets: 2
+    max-targets: 8
+    search-radius: 32
+    max-link-length: 64
+    duration-seconds: 15
+    updates-per-second: 5
+    particle: REDSTONE
+    line-color: "#FF3030"
+    # Режимы, влияющие на положение целей, отключены по умолчанию.
+    attraction-enabled: false
+    attraction-strength: 0.05
+    mirror-motion-enabled: false
+
+  scene_change:
+    enabled: true
+    max-participants: 20
+    delay-seconds: 1
+    cross-world-enabled: false
+    departure-sound: ENTITY_ENDERMAN_TELEPORT
+    arrival-sound: ENTITY_ENDERMAN_TELEPORT
+
+  inverted_world:
+    enabled: true
+    search-radius: 32
+    max-targets: 10
+    min-duration-seconds: 5
+    max-duration-seconds: 15
+    pulses-per-second-min: 2
+    pulses-per-second-max: 10
+    soft-fall-multiplier: 0.35
+    jump-boost: 0.42
+
+  out_of_time:
+    enabled: true
+    min-tempo: 0.25
+    max-tempo: 4.0
+    max-participants: 20
+    max-duration-seconds: 60
+    max-pause-seconds: 10
+
+  anomaly:
+    enabled: true
+    radius: 8
+    duration-seconds: 30
+    check-interval-ticks: 5
+    max-targets-per-zone: 20
+    max-active-zones: 10
+
+  applause:
+    enabled: true
+    max-viewers: 50
+    radius: 32
+    total-duration-seconds: 8
+    stage-prelude: 2
+    stage-development: 3
+    stage-climax: 1
+    stage-finale: 2
+    particles: END_ROD
+    climax-particles: FIREWORKS_SPARK
+    sound: ENTITY_FIREWORK_ROCKET_BLAST
+    volume: 1.0
+    pitch: 1.0
+    global-sound: false
+
+  thousand_faces:
+    enabled: true
+    max-projections: 12
+    placement-radius: 6
+    duration-seconds: 12
+    group-size: 3
+    change-period-seconds: 2
+    entity-mode-enabled: false
+
+  aeon_appearance:
+    enabled: true
+    duration-seconds: 18
+    visual-radius: 32
+    max-viewers: 50
+    updates-per-second: 10
+    # ОБЯЗАТЕЛЬНАЯ ПАЛИТРА: только белый и красный.
+    # Золотые и фиолетовые эффекты в стандартном оформлении запрещены.
+    palette:
+      primary: WHITE
+      secondary: RED
+    phases:
+      silence: 3
+      manifestation: 5
+      masquerade: 5
+      climax: 2
+      disappearance: 3
