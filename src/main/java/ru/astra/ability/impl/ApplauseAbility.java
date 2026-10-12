@@ -119,16 +119,26 @@ public final class ApplauseAbility extends TaskAbility {
                     if (globalSound) {
                         plugin().sounds().playGlobal(climaxSound, volume, pitch);
                     }
-                    plugin().particles().burst(center.clone().add(0, 1.5, 0), climaxParticle,
-                            80, 2.5, 0.15);
+                    if (climaxParticle == Particle.DUST || climaxParticle == Particle.DUST_COLOR_TRANSITION) {
+                        plugin().particles().colorBurst(center.clone().add(0, 1.5, 0), climaxParticle,
+                                80, 2.5, 0.0, ParticleService.AEON_RED);
+                    } else {
+                        plugin().particles().burst(center.clone().add(0, 1.5, 0), climaxParticle,
+                                80, 2.5, 0.15);
+                    }
                     plugin().particles().colorBurst(center.clone().add(0, 1.5, 0), Particle.DUST,
                             40, 1.5, 0.0, ParticleService.AEON_RED);
                     List<Player> snapshot = new ArrayList<>(audience);
                     plugin().scheduler().scheduleOnce(6, () -> {
                         for (Player v : snapshot) {
                             if (v.isOnline()) {
-                                v.spawnParticle(climaxParticle, center.clone().add(0, 1.5, 0),
-                                        40, 2.0, 1.0, 2.0, 0.2);
+                                if (climaxParticle == Particle.DUST || climaxParticle == Particle.DUST_COLOR_TRANSITION) {
+                                    v.spawnParticle(climaxParticle, center.clone().add(0, 1.5, 0),
+                                            40, 2.0, 1.0, 2.0, ParticleService.dustOptions(ParticleService.AEON_RED));
+                                } else {
+                                    v.spawnParticle(climaxParticle, center.clone().add(0, 1.5, 0),
+                                            40, 2.0, 1.0, 2.0, 0.2);
+                                }
                             }
                         }
                     });

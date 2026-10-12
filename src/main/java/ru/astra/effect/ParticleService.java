@@ -36,12 +36,22 @@ public final class ParticleService {
         if (w == null) {
             return;
         }
+        // Цветные Dust-частицы требуют DustOptions: без них Paper бросает
+        // IllegalArgumentException ("particle requires data") и обрывает этап сцены.
+        if (isColored(particle)) {
+            colorBurst(loc, particle, count, spread, speed, AEON_WHITE);
+            return;
+        }
         w.spawnParticle(particle, loc, clampCount(count), spread, spread, spread, speed);
     }
 
     /** Персональные частицы только указанным зрителям. */
     public void burstTo(Collection<? extends Player> viewers, Location loc, Particle particle,
                         int count, double spread, double speed) {
+        if (isColored(particle)) {
+            colorBurstTo(viewers, loc, particle, count, spread, speed, AEON_WHITE);
+            return;
+        }
         int c = clampCount(count);
         for (Player p : viewers) {
             p.spawnParticle(particle, loc, c, spread, spread, spread, speed);

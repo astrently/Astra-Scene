@@ -257,11 +257,11 @@ public final class AeonAppearanceAbility extends TaskAbility {
                         if (!m.isRunning()) {
                             m.start(new AbilityContext(null, center.clone(), audience, null, "", ""));
                         }
-                    } catch (RuntimeException ex) {
+                    } catch (RuntimeException | Error ex) {
                         // Ошибка вложенной способности не должна ронять весь этап:
                         // фиксируем в журнале и продолжаем собственными вспышками.
                         plugin().getLogger().warning("Явление Эона: не удалось запустить «Маскарад» "
-                                + "как элемент этапа: " + ex.getMessage());
+                                + "как элемент этапа: " + ex);
                     }
                 });
             }
@@ -272,7 +272,13 @@ public final class AeonAppearanceAbility extends TaskAbility {
                 Location spot = center.clone().add(Math.cos(a) * d, rand(0.3, 2.2), Math.sin(a) * d);
                 int color = (elapsed / 24) % 2 == 0 ? white : red;
                 VisualProjection vp = new VisualProjection(spot, (float) rand(0, 360), color, Particle.DUST);
-                vp.render(plugin().particles());
+                try {
+                    vp.render(plugin().particles());
+                } catch (RuntimeException | Error ex) {
+                    // Отрисовка проекции не должна обрывать этап: только запись в журнал.
+                    plugin().getLogger().warning("Явление Эона: ошибка отрисовки проекции этапа "
+                            + "«Маскарад»: " + ex);
+                }
                 for (Player v : audience) {
                     v.playSound(spot, Sound.BLOCK_GLASS_PLACE, 0.7f, 1.4f);
                 }

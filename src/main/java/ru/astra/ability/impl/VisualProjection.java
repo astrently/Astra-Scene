@@ -48,7 +48,12 @@ public final class VisualProjection {
         }
         // Голова
         particles.ring(new Location(world.getWorld(), x, y + 1.75, z), 0.18, particle, 8, color);
-        particles.burst(new Location(world.getWorld(), x, y + 1.75, z), particle, 2, 0.1, 0.0);
+        if (particle == Particle.DUST || particle == Particle.DUST_COLOR_TRANSITION) {
+            particles.colorBurst(new Location(world.getWorld(), x, y + 1.75, z), particle,
+                    2, 0.1, 0.0, color);
+        } else {
+            particles.burst(new Location(world.getWorld(), x, y + 1.75, z), particle, 2, 0.1, 0.0);
+        }
         // Направление взгляда — короткая «линия лица»
         double rad = Math.toRadians(yaw);
         double fx = x - Math.sin(rad) * 0.6;
