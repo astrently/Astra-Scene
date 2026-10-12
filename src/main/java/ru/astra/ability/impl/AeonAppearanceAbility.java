@@ -55,17 +55,19 @@ public final class AeonAppearanceAbility extends TaskAbility {
         int updatesPerSecond = cfg.sectionInt(sec, "updates-per-second", 10, 1, 20);
 
         // Палитра проходит жёсткую проверку: допускается только белый и красный.
-        String primary = cfg.sectionString(
-                sec == null ? null : sec.getConfigurationSection("palette"), "primary", "WHITE");
-        String secondary = cfg.sectionString(
-                sec == null ? null : sec.getConfigurationSection("palette"), "secondary", "RED");
-        if (!isAllowedPaletteColor(primary)) {
-            plugin().getLogger().warning("Явление Эона: palette.primary='" + primary
+        // Значение может быть именем (WHITE/RED) или hex (#RRGGBB).
+        var paletteSec = sec == null ? null : sec.getConfigurationSection("palette");
+        String rawPrimary = paletteSec == null ? "WHITE" : paletteSec.getString("primary", "WHITE");
+        String rawSecondary = paletteSec == null ? "RED" : paletteSec.getString("secondary", "RED");
+        String primary = normalizePaletteColor(rawPrimary, "WHITE");
+        String secondary = normalizePaletteColor(rawSecondary, "RED");
+        if (primary == null) {
+            plugin().getLogger().warning("Явление Эона: palette.primary='" + rawPrimary
                     + "' вне белой/красной палитры. Использован WHITE.");
             primary = "WHITE";
         }
-        if (!isAllowedPaletteColor(secondary)) {
-            plugin().getLogger().warning("Явление Эона: palette.secondary='" + secondary
+        if (secondary == null) {
+            plugin().getLogger().warning("Явление Эона: palette.secondary='" + rawSecondary
                     + "' вне белой/красной палитры. Использован RED.");
             secondary = "RED";
         }
@@ -102,27 +104,40 @@ public final class AeonAppearanceAbility extends TaskAbility {
                 silence * 20, manifestation * 20, masquerade * 20, climax * 20, disappearance * 20));
     }
 
-    /** Стандарт допускает только белый и красный (или их hex-задания). */
-    private static boolean isAllowedPaletteColor(String raw) {
+    /**
+     * Нормализация цвета палитры: допускаются только белый и красный — как имена
+     * (WHITE/RED, независимо от регистра) или hex-значения (#FFFFFF/#FF0000 и близкие).
+     * Возвращает "WHITE"/"RED" либо null, если цвет вне разрешённой палитры.
+     */
+    private static String normalizePaletteColor(String raw, String fallbackName) {
         if (raw == null) {
-            return false;
+            return fallbackName;
         }
         String v = raw.trim().toUpperCase(java.util.Locale.ROOT);
-        if (v.equals("WHITE") || v.equals("RED")) {
-            return true;
+        if (v.equals("WHITE")) {
+            return "WHITE";
+        }
+        if (v.equals("RED")) {
+            return "RED";
         }
         // Hex принимается только если он явно белый или красный по компонентам.
         try {
             int rgb = Text.colorOrDefault(v, -1);
             if (rgb < 0) {
-                return false;
+                return null;
             }
             int r = (rgb >> 16) & 0xFF, g = (rgb >> 8) & 0xFF, b = rgb & 0xFF;
             boolean whiteish = r > 200 && g > 200 && b > 200;
             boolean redish = r > 150 && g < 90 && b < 90;
-            return whiteish || redish;
+            if (whiteish) {
+                return "WHITE";
+            }
+            if (redish) {
+                return "RED";
+            }
+            return null;
         } catch (RuntimeException ex) {
-            return false;
+            return null;
         }
     }
 
@@ -238,8 +253,15 @@ public final class AeonAppearanceAbility extends TaskAbility {
             if (elapsed > tSilence + tManifest && lastEpisodeAt < 0) {
                 lastEpisodeAt = elapsed;
                 plugin().abilities().byId("masquerade").ifPresent(m -> {
-                    if (!m.isRunning()) {
-                        m.start(new AbilityContext(null, center.clone(), audience, null, "", ""));
+                    try {
+                        if (!m.isRunning()) {
+                            m.start(new AbilityContext(null, center.clone(), audience, null, "", ""));
+                        }
+                    } catch (RuntimeException ex) {
+                        // Ошибка вложенной способности не должна ронять весь этап:
+                        // фиксируем в журнале и продолжаем собственными вспышками.
+                        plugin().getLogger().warning("Явление Эона: не удалось запустить «Маскарад» "
+                                + "как элемент этапа: " + ex.getMessage());
                     }
                 });
             }
