@@ -1,0 +1,43 @@
+name: Astra
+version: '${project.version}'
+main: ru.astra.AstraPlugin
+api-version: '1.21'
+description: Astra - инструментарий постановщика: способности, иллюзии и пользовательские сцены.
+author: Astra Team
+load: POSTWORLD
+
+permissions:
+  astra.admin:
+    description: Полный доступ ко всем функциям управления плагином Astra.
+    default: op
+    children:
+      astra.use: true
+      astra.scene.view: true
+      astra.scene.edit: true
+      astra.scene.run: true
+      astra.reload: true
+      astra.assign: true
+  astra.use:
+    description: Использование способностей Astra.
+    default: op
+  astra.scene.view:
+    description: Просмотр списка сцен и их состояния.
+    default: op
+  astra.scene.edit:
+    description: Создание и редактирование пользовательских сцен.
+    default: op
+  astra.scene.run:
+    description: Запуск и остановка сцен.
+    default: op
+  astra.reload:
+    description: Перезагрузка конфигурации Astra.
+    default: op
+  astra.assign:
+    description: Назначение и снятие носителя Astra.
+    default: op
+
+commands:
+  astra:
+    description: Главное меню и управление плагином Astra.
+    usage: "/astra [menu|status|stop|stopall|reload|set|remove|cast|scene]"
+    aliases: [astramenu]
